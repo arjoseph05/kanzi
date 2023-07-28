@@ -63,13 +63,14 @@ import kanzi.SliceByteArray;
 // indexes (based on input block size). Each primary index corresponds to a data chunk.
 // Chunks may be inverted concurrently.
 
-public class BWT implements ByteTransform
-{
+
+
+public class BWT implements ByteTransform {
    private static final int MAX_BLOCK_SIZE = 1024*1024*1024; // 1 GB
    private static final int NB_FASTBITS = 17;
    private static final int MASK_FASTBITS = 1 << NB_FASTBITS;
    private static final int BLOCK_SIZE_THRESHOLD1 = 256;
-   private static final int BLOCK_SIZE_THRESHOLD2 = 8 * 1024 * 1024;     
+   private static final int BLOCK_SIZE_THRESHOLD2 = 8 * 1024 * 1024;
 
 
    private int[] buffer1;
@@ -170,8 +171,8 @@ public class BWT implements ByteTransform
       if (this.buffer1.length < count)
          this.buffer1 = new int[count];
 
-      this.saAlgo.computeBWT(src.array, dst.array, this.buffer1, src.index, dst.index, count, 
-         this.primaryIndexes, getBWTChunks(count));
+      this.saAlgo.computeBWT(src.array, dst.array, this.buffer1, src.index, dst.index, count,
+              this.primaryIndexes, getBWTChunks(count));
       src.index += count;
       dst.index += count;
       return true;
@@ -180,8 +181,7 @@ public class BWT implements ByteTransform
 
    // Not thread safe
    @Override
-   public boolean inverse(SliceByteArray src, SliceByteArray dst)
-   {
+   public boolean inverse(SliceByteArray src, SliceByteArray dst) {
       if (src.length == 0)
          return true;
 
@@ -193,30 +193,26 @@ public class BWT implements ByteTransform
       // Not a recoverable error: instead of silently fail the transform,
       // issue a fatal error.
       if (count > maxBlockSize())
-         throw new IllegalArgumentException("The max BWT block size is "+maxBlockSize()+", got "+count);
+         throw new IllegalArgumentException("The max BWT block size is " + maxBlockSize() + ", got " + count);
 
       if (dst.index + count > dst.array.length)
          return false;
 
-      if (count < 2)
-      {
+      if (count < 2) {
          if (count == 1)
             dst.array[dst.index++] = src.array[src.index++];
 
          return true;
       }
 
-      // Find the fastest way to implement inverse based on block size
       if (count <= BLOCK_SIZE_THRESHOLD2)
          return inverseMergeTPSI(src, dst, count);
-
-      return inverseBiPSIv2(src, dst, count);
+      else
+         return inverseBiPSIv2(src, dst, count);
    }
 
-
    // When count <= BLOCK_SIZE_THRESHOLD2, mergeTPSI algo
-   private boolean inverseMergeTPSI(SliceByteArray src, SliceByteArray dst, int count)
-   {
+   private boolean inverseMergeTPSI(SliceByteArray src, SliceByteArray dst, int count) {
       // Lazy dynamic memory allocation
       if (this.buffer1.length < count)
          this.buffer1 = new int[Math.max(count, 64)];
@@ -346,8 +342,7 @@ public class BWT implements ByteTransform
 
 
    // When count > BLOCK_SIZE_THRESHOLD2, biPSIv2 algo
-   private boolean inverseBiPSIv2(SliceByteArray src, SliceByteArray dst, int count)
-   {
+   private boolean inverseBiPSIv2(SliceByteArray src, SliceByteArray dst, int count) {
       // Lazy dynamic memory allocations
       if (this.buffer1.length < count+1)
          this.buffer1 = new int[Math.max(count+1, 64)];
@@ -544,7 +539,7 @@ public class BWT implements ByteTransform
 
 
       public InverseBiPSIv2Task(byte[] output, int dstIdx, int total,
-         int ckSize, int firstChunk, int lastChunk)
+                                int ckSize, int firstChunk, int lastChunk)
       {
          this.output = output;
          this.dstIdx = dstIdx;
