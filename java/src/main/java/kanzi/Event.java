@@ -38,6 +38,15 @@ public class Event
    private final long time;
    private final String msg;
 
+   public Event(Type type, EventParameters params) {
+      this.type = type;
+      this.id = params.getId();
+      this.size = params.getSize();
+      this.hash = params.getHash();
+      this.hashing = params.isHashing();
+      this.time = (params.getTime() > 0) ? params.getTime() : System.nanoTime();
+      this.msg = params.getMsg();
+   }
 
    public Event(Type type, int id, long size)
    {

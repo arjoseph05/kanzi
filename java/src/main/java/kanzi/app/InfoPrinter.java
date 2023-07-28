@@ -19,12 +19,19 @@ import kanzi.Event;
 import java.io.PrintStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import kanzi.EventParameters;
 import kanzi.Listener;
 
 // An implementation of Listener to display block information (verbose option
 // of the BlockCompressor/BlockDecompressor)
 public class InfoPrinter implements Listener
 {
+   @Override
+   public void processEvent(Event evt) {
+
+   }
+
    public enum Type { ENCODING, DECODING }
 
    private final PrintStream ps;

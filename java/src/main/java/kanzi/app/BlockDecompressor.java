@@ -34,14 +34,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import kanzi.Event;
+
+import kanzi.*;
 import kanzi.Error;
-import kanzi.Global;
-import kanzi.SliceByteArray;
 import kanzi.io.CompressedInputStream;
 import kanzi.io.NullOutputStream;
-import kanzi.Listener;
-
 
 
 public class BlockDecompressor implements Runnable, Callable<Integer>
