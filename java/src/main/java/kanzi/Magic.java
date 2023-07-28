@@ -62,42 +62,51 @@ public class Magic
 
 
    // 4 bytes must be available in 'src' at position 'start'
-   public static int getType(byte[] src, int start)
-   {
+   public static int getType(byte[] src, int start) {
       final int key = Memory.BigEndian.readInt32(src, start);
+      final int key16 = key >> 16;
 
-      if ((key & ~0x0F) == JPG_MAGIC)
+      if ((key & ~0x0F) == JPG_MAGIC) {
          return key;
-
-      if (((key >> 8) == BZIP2_MAGIC) || ((key >> 8) == MP3_ID3_MAGIC))
-         return key >> 8;
-
-      for (int i=0; i<KEYS32.length; i++) 
-      {
-         if (key == KEYS32[i])
-            return key;
       }
 
-      final int key16 = key >> 16;
-      
-      for (int i=0; i<KEYS16.length; i++) 
-      {
-         if (key16 == KEYS16[i])
-            return key16;  
-      }     
-      
-      if ((key16 == PBM_MAGIC) || (key16 == PGM_MAGIC) || (key16 == PPM_MAGIC)) 
-      {
+      if ((key >> 8) == BZIP2_MAGIC || (key >> 8) == MP3_ID3_MAGIC) {
+         return key >> 8;
+      }
+
+      if (contains(KEYS32, key)) {
+         return key;
+      }
+
+      if (contains(KEYS16, key16)) {
+         return key16;
+      }
+
+      if (isBinaryImage(key16)) {
          final int subkey = (key >> 8) & 0xFF;
 
-         if ((subkey == 0x07) || (subkey == 0x0A) || (subkey == 0x0D) || (subkey == 0x20))
+         if ((subkey == 0x07) || (subkey == 0x0A) || (subkey == 0x0D) || (subkey == 0x20)) {
             return key16;
-      }      
+         }
+      }
 
-      return NO_MAGIC;      
+      return NO_MAGIC;
    }
-   
-   
+
+   private static boolean contains(int[] array, int key) {
+      for (int i = 0; i < array.length; i++) {
+         if (key == array[i]) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   private static boolean isBinaryImage(int key) {
+      return (key == PBM_MAGIC) || (key == PGM_MAGIC) || (key == PPM_MAGIC);
+   }
+
+
    public static boolean isCompressed(int magic) 
    {
       switch (magic) 
